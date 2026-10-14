@@ -13,6 +13,7 @@ func main() {
 	serveMux.HandleFunc("GET /api/healthz", handlerReadiness)
 	serveMux.HandleFunc("GET /admin/metrics", apiCfg.handlerMetrics)
 	serveMux.HandleFunc("POST /admin/reset", apiCfg.handlerHitsReset)
+	serveMux.HandleFunc("POST /api/validate_chirp", handlerChirpsValidate)
 	myServer := http.Server{Addr: ":8080", Handler: serveMux}
 	err := myServer.ListenAndServe()
 	if err != nil {
