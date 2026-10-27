@@ -1,35 +1,13 @@
 package main
 
-import (
-	"encoding/json"
-	"net/http"
-)
+import "errors"
 
-func handlerChirpsValidate(w http.ResponseWriter, r *http.Request) {
-	type parameters struct {
-		Body string `json:"body"`
-	}
-	type returnVals struct {
-		CleanedBody string `json:"cleaned_body"`
-	}
-
-	decoder := json.NewDecoder(r.Body)
-	params := parameters{}
-	err := decoder.Decode(&params)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters", err)
-		return
-	}
-
+func validateChirp(body string) (string, error) {
 	const maxChirpLength = 140
-	if len(params.Body) > maxChirpLength {
-		respondWithError(w, http.StatusBadRequest, "Chirp is too long", nil)
-		return
+	if len(body) > maxChirpLength {
+		return "", errors.New("Chirp is too long")
 	}
 
-	cleanedBody := checkForProfanes(params.Body)
-
-	respondWithJSON(w, http.StatusOK, returnVals{
-		CleanedBody: cleanedBody,
-	})
+	cleanedBody := checkForProfanes(body)
+	return cleanedBody, nil
 }

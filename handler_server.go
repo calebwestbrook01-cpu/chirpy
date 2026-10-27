@@ -26,5 +26,14 @@ func (cfg *apiConfig) handlerMetrics(w http.ResponseWriter, r *http.Request) {
 }
 
 func (cfg *apiConfig) handlerHitsReset(w http.ResponseWriter, r *http.Request) {
+	if cfg.platform != "dev" {
+		respondWithError(w, http.StatusForbidden, "Forbidden", nil)
+		return
+	}
+	err := cfg.dbQueries.DeleteAllUsers(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Couldn't delete users", err)
+		return
+	}
 	cfg.fileserverHits.Store(0)
 }
